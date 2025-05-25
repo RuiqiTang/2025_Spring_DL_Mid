@@ -17,7 +17,7 @@ def train_model(model, train_loader,val_loader,device,
     writer = SummaryWriter(log_dir=tensorboard_dir)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD([
-        {'params': model.fc.parameters()},  # 新的分类层，较大学习率
+        {'params': model.model.fc.parameters()},  # 新的分类层，较大学习率
         {'params': [p for name, p in model.named_parameters() if "fc" not in name], 'lr': fine_tune_lr}
     ], lr=lr, momentum=0.9)
 
@@ -66,6 +66,8 @@ def train_model(model, train_loader,val_loader,device,
     
     # save model file
     model_savebase=os.path.join(project_base,'output','model')
+    if not os.path.exists(model_savebase):
+        os.makedirs(model_savebase,exist_ok=True)
     model_fp=os.path.join(model_savebase,f'ResNet_model_{timestamp}.pth')
     torch.save(model.state_dict(),model_fp)
     print(f"Model saved in:{model_fp}")
